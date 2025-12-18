@@ -20,7 +20,7 @@ id_rsa_terraform
 
 # Ansible
 *.retry
-inventory/aws_ec2.yml (if it contains secrets)
+inventory/aws_ec2.yml
 
 # OS
 .DS_Store
