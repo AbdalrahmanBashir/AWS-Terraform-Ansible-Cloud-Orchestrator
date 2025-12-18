@@ -24,3 +24,4 @@ inventory/aws_ec2.yml
 
 # OS
 .DS_Store
+scripts/variables.env

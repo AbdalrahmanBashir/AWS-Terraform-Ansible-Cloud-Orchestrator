@@ -29,7 +29,7 @@ This project automates the deployment and management of a web server on AWS usin
 - Terraform and Ansible installed preferd on linux
 - AWS CLI installed and configured with your credentials
 - SSH key pair for accessing the EC2 instance
-- Domain name for SSL certificate (optional but recommended)
+- Domain name for SSL certificate
 
 ## Setup Instructions
 1. Clone the repository:
@@ -38,12 +38,20 @@ This project automates the deployment and management of a web server on AWS usin
     cd aws-terraform-ansible-cloud-orchestrator
     ```
 2. Update the variables in `terraform/variables.tf` as needed.
-3. Run the deployment script:
+
+3. Set environment variables in `scripts/variables.env`:
+   ```bash
+   cd scripts
+   cp variables.env.example variables.env
+   nano scripts/variables.env
+   ```
+
+4. Run the deployment script:
    ```bash
    ./scripts/deploy.sh
    ```
-4. Access your web server via the public IP or domain name.
-5. To destroy the infrastructure, run:
+5. Access your web server via the public IP or domain name.
+6. To destroy the infrastructure, run:
    ```bash
    ./scripts/destroy_platform.sh
    ```

@@ -3,10 +3,25 @@
   hosts: webservers
   become: true
   vars:
-    domain_name: "sandbox.abdalrahman.tech"
-    cert_email: "abdalr.bashir@gmail.com"
+    domain_name: "{{ lookup('env', 'DOMAIN_NAME') }}"
+    cert_email: "{{ lookup('env', 'CERT_EMAIL') }}"
+    cloudflare_zone: "{{ lookup('env', 'CLOUDFLARE_ZONE') }}"
+    record_name: "{{ lookup('env', 'RECORD_NAME') }}"
 
   tasks:
+
+    - name: Update Cloudflare DNS record
+      community.general.cloudflare_dns:
+        zone: "{{ cloudflare_zone }}"
+        record: "{{ record_name }}"
+        type: A
+        value: "{{ inventory_hostname }}"
+        api_token: "{{ lookup('env', 'CLOUDFLARE_TOKEN') }}"
+        proxied: false
+        state: present
+      delegate_to: localhost
+      become: false
+
     - name: Update apt cache
       apt:
         update_cache: yes

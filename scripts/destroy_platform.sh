@@ -1,4 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
+set -euo pipefail
 
 # Move to the terraform directory
 echo "Initiating Platform Teardown..."
