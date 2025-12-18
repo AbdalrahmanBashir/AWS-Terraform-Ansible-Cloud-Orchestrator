@@ -1,0 +1,82 @@
+---
+- name: Configure Developer Sandbox with HTTPS
+  hosts: webservers
+  become: true
+  vars:
+    domain_name: "sandbox.abdalrahman.tech"
+    cert_email: "abdalr.bashir@gmail.com"
+
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+
+    - name: Install Nginx, Certbot, and Python Plugin
+      apt:
+        name:
+          - nginx
+          - git
+          - curl
+          - python3
+          - certbot
+          - python3-certbot-nginx
+        state: present
+
+    - name: Ensure Nginx is running
+      service:
+        name: nginx
+        state: started
+        enabled: yes
+
+    - name: Create custom welcome page
+      copy:
+        content: |
+          <!DOCTYPE html>
+          <html>
+          <head>
+              <title>Cloud Sandbox | Verified</title>
+              <style>
+                  body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background: #f4f7f6; margin: 0; }
+                  .card { background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center; }
+                  h1 { color: #2d3748; }
+                  p { color: #718096; }
+                  .status { color: #48bb78; font-weight: bold; }
+              </style>
+          </head>
+          <body>
+              <div class="card">
+                  <h1>Infrastructure Provisioning Successful</h1>
+                  <p>Secure Developer Sandbox is <span class="status">Live & Encrypted</span></p>
+                  <p>Managed via Terraform & Ansible</p>
+                  <p>Architected & Deployed by Abdalrahman Bashir  aka Nakshsat </p>
+
+              </div>
+          </body>
+          </html>
+        dest: /var/www/html/index.html
+        mode: '0644'
+
+    - name: Configure Nginx to use the domain name
+      lineinfile:
+        path: /etc/nginx/sites-available/default
+        regexp: '^\s*server_name _;'
+        line: "    server_name {{ domain_name }};"
+      notify: Reload Nginx
+
+    - name: Check if certificate already exists
+      stat:
+        path: "/etc/letsencrypt/live/{{ domain_name }}/fullchain.pem"
+      register: cert_file
+
+    - name: Obtain and Install SSL Certificate via Certbot
+      shell: |
+        certbot --nginx -d {{ domain_name }} --non-interactive --agree-tos -m {{ cert_email }} --redirect
+      when: not cert_file.stat.exists
+      notify: Reload Nginx
+
+  handlers:
+    - name: Reload Nginx
+      service:
+        name: nginx
+        state: reloaded
