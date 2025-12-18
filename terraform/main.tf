@@ -30,12 +30,28 @@ resource "aws_key_pair" "deployer" {
 
 resource "aws_security_group" "allow_ssh" {
   name        = "allow_ssh"
-  description = "Allow SSH inbound traffic"
+  description = "Allow SSH and HTTPS inbound traffic"
   vpc_id      = aws_vpc.main.id
 
+  # HTTP Access
   ingress {
     from_port   = 22
     to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  # HTTP Access
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # HTTPS Access
+  ingress {
+    from_port   = 443
+    to_port     = 443
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
