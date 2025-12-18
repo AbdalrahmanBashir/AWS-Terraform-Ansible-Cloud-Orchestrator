@@ -1,8 +1,21 @@
 # Terraform
-.terraform/
+# Local .terraform directories
+**/.terraform/*
+
+# .tfstate files
 *.tfstate
-*.tfstate.backup
+*.tfstate.*
+
+# Crash logs
+crash.log
+
+# Variables files
 *.tfvars
+*.tfvars.json
+
+# Private keys
+*.pem
+id_rsa_terraform
 .terraform.lock.hcl
 
 # Ansible
